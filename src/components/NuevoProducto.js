@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 /* Actions de redux */
 import { crearNuevoProductoAction } from '../actions/productoActions';
 
-const NuevoProducto = () => {
+const NuevoProducto = ({history}) => {
 
     /* State del componente */
     const [nombre, guardarNombre] = useState('');
@@ -14,6 +14,8 @@ const NuevoProducto = () => {
 
 
     /* Selector es la manera en que se accede al state desde el componente */
+    const cargando = useSelector(state => state.productos.loading);
+    const error = useSelector(state => state.productos.error);
 
 
     /* Llama el action de productoAction */
@@ -25,7 +27,7 @@ const NuevoProducto = () => {
         e.preventDefault();
 
         /* Validar formulario */
-        if(nombre.trim() === '' || precio <= 0){
+        if (nombre.trim() === '' || precio <= 0) {
             return;
         }
 
@@ -36,6 +38,9 @@ const NuevoProducto = () => {
             nombre,
             precio
         });
+
+        /* Redireccionar */
+        history.push('/')
     }
     return (
         <div className="row justify-content-center">
@@ -77,6 +82,9 @@ const NuevoProducto = () => {
                                 type="submit"
                                 className="btn btn-primary font-weight-bold text-uppercase d-block w-100">Agregar producto</button>
                         </form>
+
+                        {cargando ? <p>Cargando...</p> : null}
+                        {error ? <p className="alert alert-danger p2 mt-4 text-center">Hubo un error</p> : null}
                     </div>
                 </div>
             </div>
