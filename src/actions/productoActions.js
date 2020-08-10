@@ -1,4 +1,4 @@
-import { AGREGAR_PRODUCTO, AGREGAR_PRODUCTO_EXITO, AGREGAR_PRODUCTO_ERROR } from '../types';
+import { AGREGAR_PRODUCTO, AGREGAR_PRODUCTO_EXITO, AGREGAR_PRODUCTO_ERROR, COMENZAR_DESCARGA_PRODUCTOS, DESCARGA_PRODUCTOS_ERROR, DESCARGA_PRODUCTOS_EXITO } from '../types';
 import clienteAxios from '../config/axios';
 import Swal from 'sweetalert2';
 
@@ -20,7 +20,7 @@ export function crearNuevoProductoAction(producto) {
             Swal.fire('Correcto', 'El producto se agrego correctamente', 'success');
 
         } catch (error) {
-            console.log('error en agregarproducto',error);
+            console.log('error en agregarproducto', error);
             /* Actualizar state si salio mal */
             dispatch(agregarProductoError(true));
             Swal.fire({
@@ -42,12 +42,41 @@ const agregarProducto = () => ({
 /* Producto guardado en la BD */
 const agregarProductoExito = producto => ({
     type: AGREGAR_PRODUCTO_EXITO,
-    payload:producto
+    payload: producto
 });
 
 /* Producto NO guardado en la BD */
-
 const agregarProductoError = estado => ({
     type: AGREGAR_PRODUCTO_ERROR,
     payload: estado
 });
+
+/* Func descarga productos desde BD */
+export function obtenerProductosAction() {
+    return async (dispatch) => {
+        dispatch(descargarProductos());
+
+        try {
+            const respuesta = await clienteAxios.get('/productos');
+            dispatch(descargaProductosExitosa(respuesta.data));
+        } catch (error) {
+            console.log('error al obtenerproductos', error);
+            dispatch(descargaProductosError());
+        }
+    }
+};
+
+const descargarProductos = () => ({
+    type: COMENZAR_DESCARGA_PRODUCTOS,
+    payload: true
+})
+
+const descargaProductosExitosa = productos => ({
+    type: DESCARGA_PRODUCTOS_EXITO,
+    payload: productos
+})
+
+const descargaProductosError = () => ({
+    type: DESCARGA_PRODUCTOS_ERROR,
+    payload: true
+})
